@@ -1,0 +1,82 @@
+---
+- hosts: default
+  remote_user: vagrant
+  become: yes
+  tasks:
+    # - name: Install unzip
+    #   apt: pkg=unzip state=latest update_cache=yes
+      
+    - name: Creates directory
+      file:
+        path: /usr/java
+        state: directory
+
+    - name: Unzip JDK
+      unarchive:
+        src: jdk-7u80-linux-x64.tar.gz
+        dest: /usr/java
+
+    # - name: Add a line to a file
+    #   lineinfile:
+    #     path: /etc/default/bsdmainutils
+    #     line: export JAVA_HOME=/usr/java/jdk.1.7.0_80
+
+
+    # - name: Install CDH5 repository
+    #   command: dpkg -i cdh5-repository_1.0_all.deb
+
+    - name: Install CDH5 .deb repository
+      apt:
+        deb: /vagrant/cdh5-repository_1.0_all.deb
+
+
+    # - name: Install CDH5 repository
+    #   dpkg_selections:
+    #     name: cdh5-repository_1.0_all.deb
+    #     selection: install
+
+    # - name: Install curl
+    #   apt: pkg=curl state=latest update_cache=yes
+    
+    # - name: Add Cloudera repository
+    #   command: curl -s http://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh/archive.key | sudo apt-key add -
+
+    - name: Add Cloudera repository
+      apt_key:
+        url: http://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh/archive.key
+
+    - name: Update apt packages
+      apt:
+        update_cache: yes
+        force_apt_get: yes
+
+    # - name: Install CDH
+    #   command: sudo apt-get install hadoop-0.20-conf-pseudo
+    
+    - name: Install CDH
+      apt: 
+        name: hadoop-0.20-conf-pseudo 
+        # state: latest 
+        # update_cache: yes
+      
+    # - name: View HD files
+    #   command: dpkg -L hadoop-0.20-conf-pseudo
+
+    # - name: Formatear nombre del nodo
+    #   command: sudo -u hdfs hdfs namenode -format
+
+    # - name: Start HD
+    #   command: for x in `cd /etc/init.d ; ls hadoop-hdfs-*` ; do sudo service $x start ; done
+    
+# Create /tmp directory
+# sudo -u hdfs hadoop fs -mkdir -p /tmp
+
+# Set permissions
+# sudo -u hdfs hadoop fs -chmod -R 1777 /tmp
+
+# Create the MapReduce system directories
+# sudo -u hdfs hadoop fs -mkdir -p /var/lib/hadoop-hdfs/cache/mapred/mapred/staging
+# sudo -u hdfs hadoop fs -chmod 1777 /var/lib/hadoop-hdfs/cache/mapred/mapred/staging
+# sudo -u hdfs hadoop fs -chown -R mapred /var/lib/hadoop-hdfs/cache/mapred
+
+
